@@ -1,0 +1,249 @@
+{
+  "name": "Automated Social Media Content Generation with n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        784
+      ],
+      "id": "ac2bb268-92fc-4555-9ac4-938f43947cc6",
+      "name": "Gemini - X/Twitter Content"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        272
+      ],
+      "id": "13cf7a7b-b8a2-432c-81d8-422e000f780c",
+      "name": "Gemini - LinkedIn Content"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        576
+      ],
+      "id": "9faa3837-c06d-488d-94fd-aa7883f3f272",
+      "name": "Gemini - Article Summarizer"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1g7hSKbtSlWDOgvi8dZEqMU-7QnjhrEHBi_-3P437On8",
+          "mode": "list",
+          "cachedResultName": "Social Media Workflow",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g7hSKbtSlWDOgvi8dZEqMU-7QnjhrEHBi_-3P437On8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g7hSKbtSlWDOgvi8dZEqMU-7QnjhrEHBi_-3P437On8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -752,
+        352
+      ],
+      "id": "a8a694b6-4390-4356-82e1-6dff7b93724b",
+      "name": "Google Sheets Trigger"
+    },
+    {
+      "parameters": {
+        "person": "iTJ4Uc7OCK",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        176,
+        160
+      ],
+      "id": "b48ec892-8b5d-4bfe-a5a9-f47c788e1787",
+      "name": "Post to LinkedIn"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        176,
+        560
+      ],
+      "id": "717a5cdd-7f50-4103-b52b-3b34320a0278",
+      "name": "Post to Twitter"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Assume the role of an industry expert and draft a LinkedIn post discussing key points from a news article relevant to artificial intelligence. The post should provide insightful analysis, connect with current industry trends, and encourage professional engagement or discussions. Highlight any notable implications for the industry. LinkedIn supports detailed posts, so ensure it is informative and structured. Add a professional call to action. Directly start with the post content, do not add any primer like \"here is your content for LinkedIn post\". Here's a summary of the article: {{ $json.text }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -176,
+        48
+      ],
+      "id": "a5d49861-ade8-4a5a-b947-485760723ad1",
+      "name": "Generate LinkedIn Post Content"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Draft an X post as an AI industry expert analyzing a key news article. The post should:\nDeliver sharp insights on the article's main points.\nConnect to current AI trends.\nSpark discussion with a thought-provoking question.\nKeep it punchy and engaging.\nEnd with a clear CTA.\nLength should be within 30 words. Focus on what matters most to the AI community. Make every word count.\nArticle summary: {{ $json.text }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -176,
+        560
+      ],
+      "id": "3ea0d011-78db-474b-a910-851f1307ec54",
+      "name": "Generate X/Twitter PostContent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summarize this article: {{ $json.newslinks }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -528,
+        352
+      ],
+      "id": "d172dad3-74c3-4b34-8602-827ffdd73e24",
+      "name": "Summarize News Article"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gemini - X/Twitter Content": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate X/Twitter PostContent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini - LinkedIn Content": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate LinkedIn Post Content",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini - Article Summarizer": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarize News Article",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Summarize News Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate LinkedIn Post Content": {
+      "main": [
+        [
+          {
+            "node": "Post to LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate X/Twitter PostContent": {
+      "main": [
+        [
+          {
+            "node": "Post to Twitter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize News Article": {
+      "main": [
+        [
+          {
+            "node": "Generate LinkedIn Post Content",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate X/Twitter PostContent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "2818790d-96c9-4f87-909f-d7f36c69b30c",
+  "meta": {
+    "instanceId": "a8218007d2d0a607b2283340da8f06c25ec00891cf9646a4e46ae77d7e21ddc6"
+  },
+  "id": "xdApCnWDOWPTtTIi",
+  "tags": []
+}
